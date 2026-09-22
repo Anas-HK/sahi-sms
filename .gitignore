@@ -1,0 +1,26 @@
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+next-env.d.ts
+.DS_Store
+.vercel
+
+# Fixture photos contain real CNICs and vehicle papers. Never commit them.
+tests/fixtures/**/*.jpg
+tests/fixtures/**/*.jpeg
+tests/fixtures/**/*.png
+tests/fixtures/**/*.webp
+tests/fixtures/generated/
+
+# Browser-verification artefacts
+.playwright-mcp/
+
+# tesseract.js caches its training data here when the bench runs in Node.
+*.traineddata
+
+# Working notes and research. Kept locally, never published: they carry
+# session history, decisions and personal context that do not belong in a
+# public repo.
+.claude/
+docs/

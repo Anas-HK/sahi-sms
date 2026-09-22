@@ -1,0 +1,661 @@
+/*
+ * Built for a cheap Android phone held in bright sunlight by someone who is
+ * not a confident reader. That means very high contrast, large type, large
+ * targets, one column, and no decoration that competes with the content.
+ */
+
+:root {
+  --ink: #12151a;
+  --ink-soft: #4a525e;
+  --paper: #f7f5f0;
+  --card: #ffffff;
+  --line: #d9d4c9;
+  --accent: #0f5c3f;
+  --accent-ink: #ffffff;
+  --accent-soft: #e6f0ea;
+  --warn: #8a5a00;
+  --warn-soft: #fdf3dd;
+  --danger: #98241c;
+  --danger-soft: #fbeae8;
+
+  --radius: 8px;
+  --tap: 56px;
+
+  --font-en: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  /* Supplied by next/font in app/layout.tsx, self-hosted at build time. */
+  --font-ur: var(--font-nastaliq), 'Noto Nastaliq Urdu', serif;
+
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --ink: #eceef1;
+    --ink-soft: #a6adb8;
+    --paper: #14171b;
+    --card: #1c2026;
+    --line: #333a43;
+    --accent: #4bbd8c;
+    --accent-ink: #0b1a14;
+    --accent-soft: #16302545;
+    --warn: #f0c274;
+    --warn-soft: #2e250f;
+    --danger: #f2938a;
+    --danger-soft: #341a17;
+    color-scheme: dark;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-en);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+}
+
+[dir='rtl'] body,
+body[dir='rtl'] {
+  font-family: var(--font-ur);
+}
+
+[dir='rtl'] {
+  font-family: var(--font-ur);
+  /* Nastaliq descends a long way; cramped leading makes it unreadable. */
+  line-height: 2.1;
+}
+
+/* Numbers, plates and the SMS itself stay latin and left-to-right even in Urdu. */
+.ltr {
+  direction: ltr;
+  unicode-bidi: isolate;
+  font-family: var(--font-en);
+  line-height: 1.5;
+}
+
+.page {
+  max-width: 34rem;
+  margin: 0 auto;
+  padding: 1.25rem 1rem 4rem;
+}
+
+/* ------------------------------------------------------------- header */
+
+.masthead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-block: 0.5rem 1rem;
+}
+
+.masthead h1 {
+  font-size: 1.35rem;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.masthead p {
+  margin: 0.15rem 0 0;
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+}
+
+.langtoggle {
+  display: inline-flex;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  overflow: hidden;
+  flex: none;
+  background: var(--card);
+}
+
+.langtoggle button {
+  border: 0;
+  background: none;
+  color: var(--ink-soft);
+  padding: 0.5rem 0.85rem;
+  font: inherit;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  cursor: pointer;
+  min-height: 44px;
+}
+
+.langtoggle button[aria-pressed='true'] {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+/* -------------------------------------------------------------- cards */
+
+.card {
+  padding: 1.4rem 0 0.2rem;
+  margin: 0;
+  border-top: 1px solid var(--line);
+}
+
+.card:first-of-type {
+  border-top: 0;
+}
+
+.card > h2 {
+  margin: 0 0 0.9rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+/* The scanner is the reason the page exists, so it is the one boxed block. */
+.card-hero {
+  border: 2px solid var(--accent);
+  border-radius: var(--radius);
+  background: var(--accent-soft);
+  padding: 1.1rem;
+  margin-block: 1.25rem;
+}
+
+.card-hero > h2 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: normal;
+  text-transform: none;
+  color: var(--ink);
+  margin-bottom: 0.4rem;
+}
+
+.card-hero p {
+  margin-block: 0 1rem;
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+}
+
+/* One-tap province picker: a required field that should not look like a form. */
+.label-as-text {
+  display: block;
+  font-weight: 650;
+  margin-bottom: 0.45rem;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.chip {
+  /* Size to the label, so a short last row does not stretch across the page. */
+  flex: 0 0 auto;
+  min-height: 48px;
+  padding: 0.55rem 0.9rem;
+  border: 2px solid var(--line);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  font-size: 1rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.chip[aria-pressed='true'] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 650;
+}
+
+.field[data-state='error'] .chip {
+  border-color: var(--danger);
+}
+
+/* Secondary help, folded away until someone actually needs it. */
+.aside {
+  margin-top: 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0.2rem 0.8rem;
+  background: var(--paper);
+}
+
+.aside > summary {
+  cursor: pointer;
+  padding: 0.7rem 0;
+  font-size: 0.95rem;
+  color: var(--ink-soft);
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+
+.aside[open] > summary {
+  font-weight: 650;
+  color: var(--ink);
+}
+
+.aside p {
+  font-size: 0.92rem;
+  color: var(--ink-soft);
+  margin-block: 0 0.8rem;
+}
+
+.aside .btn {
+  border-radius: var(--radius);
+  margin-bottom: 0.7rem;
+}
+
+.or-type {
+  margin: 0.7rem 0 0;
+  color: var(--ink-soft);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.note {
+  padding: 0.75rem 0.9rem;
+  font-size: 0.9rem;
+  margin-block: 1rem;
+  border: 0;
+  border-inline-start: 4px solid transparent;
+}
+
+.note strong {
+  display: block;
+  margin-bottom: 0.2rem;
+}
+
+.note-warn {
+  background: var(--warn-soft);
+  border-inline-start-color: var(--warn);
+  color: var(--ink);
+}
+
+.note-danger {
+  background: var(--danger-soft);
+  border-inline-start-color: var(--danger);
+  color: var(--ink);
+}
+
+.note-quiet {
+  background: transparent;
+  border-inline-start-color: var(--line);
+  color: var(--ink-soft);
+  font-size: 0.85rem;
+}
+
+/* ------------------------------------------------------------- fields */
+
+.field {
+  margin-block: 1rem;
+}
+
+.field > label,
+.fieldset > legend {
+  display: block;
+  font-weight: 650;
+  margin-bottom: 0.3rem;
+}
+
+.field .help {
+  color: var(--ink-soft);
+  font-size: 0.88rem;
+  margin: 0 0 0.45rem;
+}
+
+input[type='text'],
+input[type='tel'],
+select {
+  width: 100%;
+  min-height: var(--tap);
+  padding: 0.7rem 0.85rem;
+  font: inherit;
+  font-size: 1.1rem;
+  color: var(--ink);
+  background: var(--paper);
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
+}
+
+input[type='text'],
+input[type='tel'] {
+  direction: ltr;
+  text-align: left;
+  font-family: var(--font-en);
+  letter-spacing: 0.04em;
+}
+
+select {
+  appearance: none;
+  background-image: linear-gradient(transparent, transparent);
+}
+
+input:focus-visible,
+select:focus-visible,
+button:focus-visible,
+a:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.field[data-state='error'] input,
+.field[data-state='error'] select {
+  border-color: var(--danger);
+}
+
+.field[data-state='warn'] input,
+.field[data-state='warn'] select {
+  border-color: var(--warn);
+}
+
+.msg {
+  margin: 0.35rem 0 0;
+  font-size: 0.9rem;
+}
+
+.msg-error {
+  color: var(--danger);
+}
+
+.msg-warn {
+  color: var(--warn);
+}
+
+/* ------------------------------------------------------- choices */
+
+.choices {
+  display: grid;
+  gap: 0.5rem;
+  border: 0;
+  padding: 0;
+  margin: 1.1rem 0;
+}
+
+.choice,
+.check {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  min-height: var(--tap);
+  padding: 0.6rem 0.8rem;
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
+  cursor: pointer;
+  background: var(--paper);
+}
+
+.choice input,
+.check input {
+  width: 22px;
+  height: 22px;
+  flex: none;
+  accent-color: var(--accent);
+}
+
+.choice:has(input:checked) {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.check {
+  margin-block: 0.5rem;
+  align-items: flex-start;
+}
+
+.check input {
+  margin-top: 0.4rem;
+}
+
+/* ------------------------------------------------------------ buttons */
+
+.btn {
+  border-radius: var(--radius);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  min-height: var(--tap);
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+  font: inherit;
+  font-size: 1.05rem;
+  font-weight: 650;
+  text-decoration: none;
+  cursor: pointer;
+  text-align: center;
+}
+
+.btn-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+
+.btn-quiet {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--line);
+}
+
+.btn[aria-disabled='true'],
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn + .btn {
+  border-radius: var(--radius);
+  margin-top: 0.6rem;
+}
+
+.btnrow {
+  display: grid;
+  gap: 0.6rem;
+  grid-template-columns: 1fr 1fr;
+}
+
+.btnrow .btn + .btn {
+  border-radius: var(--radius);
+  margin-top: 0;
+}
+
+/* ------------------------------------------------------------ preview */
+
+.preview {
+  background: var(--ink);
+  color: var(--paper);
+  border-radius: var(--radius);
+  padding: 0.9rem 1rem;
+  font-family: ui-monospace, 'Cascadia Mono', 'Courier New', monospace;
+  font-size: 1rem;
+  /*
+   * Wrap between the fields, never inside one. Splitting 15082026 across two
+   * lines invites a transcription error in exactly the message where a single
+   * wrong character costs a 24 hour block.
+   */
+  word-break: normal;
+  overflow-wrap: break-word;
+  direction: ltr;
+  text-align: left;
+  line-height: 1.6;
+}
+
+.preview-empty {
+  background: var(--paper);
+  color: var(--ink-soft);
+  border: 2px dashed var(--line);
+  font-family: inherit;
+  word-break: normal;
+}
+
+.sendto {
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+  margin: 0.5rem 0 0.9rem;
+}
+
+/* --------------------------------------------------------------- scan */
+
+.sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: #000;
+  display: flex;
+  flex-direction: column;
+}
+
+.sheet-body {
+  flex: 1;
+  /* Without this a flex child refuses to shrink below its content, and the
+     bar below gets pushed off the bottom of the viewport. */
+  min-height: 0;
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+}
+
+.sheet video,
+.sheet .shot {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000;
+}
+
+.guide {
+  position: absolute;
+  border: 3px solid #ffd76a;
+  border-radius: 8px;
+  box-shadow: 0 0 0 100vmax rgb(0 0 0 / 0.55);
+  pointer-events: none;
+  transition: border-color 120ms linear;
+}
+
+/* Turns green the moment the frame is good enough to read, which is also the
+   moment it fires, so the user sees why it fired. */
+.guide[data-ready='true'] {
+  border-color: #4bbd8c;
+}
+
+.livehint {
+  text-align: center;
+  font-weight: 650;
+  color: #ffd76a !important;
+}
+
+.livehint[data-ready='true'] {
+  color: #4bbd8c !important;
+}
+
+.sheet-bar {
+  background: #111;
+  color: #fff;
+  padding: 1rem;
+  display: grid;
+  gap: 0.6rem;
+  flex: none;
+  /* Never let the instructions squeeze the camera out or push the buttons
+     off screen: the controls have to stay reachable. */
+  max-height: 55dvh;
+  overflow-y: auto;
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+
+.sheet-bar p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #ddd;
+}
+
+.sheet-bar .fineprint {
+  font-size: 0.8rem;
+  color: #aaa;
+}
+
+.strip {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  display: block;
+}
+
+.readout {
+  display: grid;
+  gap: 0.6rem;
+  margin-block: 0.9rem;
+}
+
+/* A confidently-read field is green, a doubtful one amber, a bad one red. */
+.readout .field[data-grade='high'] input {
+  border-color: var(--accent);
+}
+
+.readout .field[data-grade='medium'] input {
+  border-color: var(--warn);
+}
+
+.readout .field[data-grade='low'] input {
+  border-color: var(--danger);
+}
+
+.spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid rgb(255 255 255 / 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation-duration: 3s;
+  }
+}
+
+/* ------------------------------------------------------------- footer */
+
+footer {
+  color: var(--ink-soft);
+  font-size: 0.85rem;
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+}
+
+footer a {
+  color: inherit;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
