@@ -139,6 +139,9 @@ export default function ScanSheet({
   const [dateEdit, setDateEdit] = useState('');
   const [guideBox, setGuideBox] = useState<React.CSSProperties | null>(null);
   const [hint, setHint] = useState<GateResult['reason']>('empty');
+  /** null while unknown, false when the camera has no controllable torch. */
+  const [torchSupported, setTorchSupported] = useState<boolean | null>(null);
+  const [torchOn, setTorchOn] = useState(false);
   const [autoExhausted, setAutoExhausted] = useState(false);
 
   /** Whether the OCR module was ever loaded, so closing does not pull it in. */
@@ -152,8 +155,34 @@ export default function ScanSheet({
   /* ------------------------------------------------------------ camera */
 
   const stopCamera = useCallback(() => {
+    // Stopping the track releases the torch too, so there is nothing to undo.
     streamRef.current?.getTracks().forEach((track) => track.stop());
     streamRef.current = null;
+    setTorchOn(false);
+  }, []);
+
+  /**
+   * The torch lives on the video track, not on the camera as a whole, so it
+   * can only be driven once a stream exists.
+   *
+   * `torch` is not in the standard MediaTrack typings and plenty of devices
+   * and browsers do not expose it at all, iOS Safari included, so every step
+   * is guarded and failure just means no torch button.
+   */
+  const setTorch = useCallback(async (on: boolean): Promise<boolean> => {
+    const track = streamRef.current?.getVideoTracks()[0];
+    if (!track) return false;
+    try {
+      const caps = track.getCapabilities?.() as { torch?: boolean } | undefined;
+      if (!caps?.torch) return false;
+      await track.applyConstraints({
+        advanced: [{ torch: on } as unknown as MediaTrackConstraintSet],
+      });
+      setTorchOn(on);
+      return true;
+    } catch {
+      return false;
+    }
   }, []);
 
   const startCamera = useCallback(async () => {
@@ -172,6 +201,12 @@ export default function ScanSheet({
         await videoRef.current.play().catch(() => undefined);
       }
       setPhase('camera');
+
+      // Light on by default. A laminated certificate under a ceiling light is
+      // the common case and it reads far better lit. The button turns it off
+      // for anyone holding the paper under glare, where the torch hurts.
+      const lit = await setTorch(true);
+      setTorchSupported(lit);
     } catch {
       setPhase('nocamera');
     }
@@ -553,6 +588,16 @@ export default function ScanSheet({
             <button type="button" className="btn btn-primary" onClick={captureNow}>
               {t.scanCapture}
             </button>
+            {torchSupported && (
+              <button
+                type="button"
+                className="btn btn-quiet"
+                aria-pressed={torchOn}
+                onClick={() => void setTorch(!torchOn)}
+              >
+                {torchOn ? t.torchOff : t.torchOn}
+              </button>
+            )}
             <p className="fineprint">{t.scanDownload}</p>
           </>
         )}

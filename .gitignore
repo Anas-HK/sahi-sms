@@ -24,3 +24,9 @@ tests/fixtures/generated/
 # public repo.
 .claude/
 docs/
+
+# Screen recordings and renders. The source recording shows an unblurred
+# certificate: owner name, CNIC and home address. Never commit either.
+*.mp4
+*.mov
+*.mkv

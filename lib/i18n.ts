@@ -39,6 +39,8 @@ export interface Strings {
   scanTitle: string;
   scanInstruction: string;
   scanCapture: string;
+  torchOn: string;
+  torchOff: string;
   scanCancel: string;
   scanWorking: string;
   scanFailedTitle: string;
@@ -114,6 +116,8 @@ const en: Strings = {
   scanTitle: 'Scan the certificate',
   scanInstruction: 'Put the top line, the one with the plate and date, inside the box.',
   scanCapture: 'Take photo',
+  torchOn: 'Turn the light on',
+  torchOff: 'Turn the light off',
   scanCancel: 'Close',
   scanWorking: 'Reading',
   scanFailedTitle: 'Could not read it',
@@ -213,6 +217,8 @@ const ur: Strings = {
   scanTitle: 'سرٹیفکیٹ اسکین کریں',
   scanInstruction: 'سب سے اوپر والی سطر، جس میں پلیٹ اور تاریخ ہے، ڈبے کے اندر رکھیں۔',
   scanCapture: 'تصویر لیں',
+  torchOn: 'روشنی جلائیں',
+  torchOff: 'روشنی بند کریں',
   scanCancel: 'بند کریں',
   scanWorking: 'پڑھا جا رہا ہے',
   scanFailedTitle: 'پڑھا نہیں جا سکا',
