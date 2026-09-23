@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   extractFromOcr,
+  extractOwnerNic,
   gradeConfidence,
   repairDigits,
   repairLetters,
@@ -104,12 +105,13 @@ describe('extracting both fields from a scan', () => {
     expect(r.date?.value).toBe('15082026');
   });
 
-  describe('never reads the CNIC off the certificate', () => {
+  describe('never returns the CNIC as part of a normal scan', () => {
     /**
      * The NIC printed on a Form G belongs to the registered owner. For a
-     * motorcycle the person registering is often someone else, so sending
-     * that number would register the wrong person. The scanner must return
-     * the plate and the date and nothing else, whatever else is on the page.
+     * motorcycle the person registering is often someone else, so applying
+     * that number would register the wrong person. This function returns the
+     * plate and the date and nothing else; the NIC is read separately, by
+     * extractOwnerNic, and only ever offered for the user to confirm.
      */
     it('ignores the owner NIC on a full page scan', () => {
       const r = extractFromOcr(FULL_PAGE, undefined, NOW);

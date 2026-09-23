@@ -360,6 +360,32 @@ a:focus-visible {
   border-color: var(--warn);
 }
 
+.nic-offer {
+  margin-block: 1.1rem;
+  padding: 0.9rem;
+  border: 2px solid var(--warn);
+  border-radius: var(--radius);
+  background: var(--warn-soft);
+}
+
+.nic-value {
+  font-family: ui-monospace, 'Cascadia Mono', monospace;
+  font-size: 1.15rem;
+  font-weight: 700;
+  direction: ltr;
+  text-align: left;
+  margin: 0 0 0.5rem;
+}
+
+.nic-offer .check {
+  background: var(--card);
+}
+
+.help-strong {
+  color: var(--warn);
+  font-weight: 600;
+}
+
 .msg {
   margin: 0.35rem 0 0;
   font-size: 0.9rem;

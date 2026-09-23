@@ -10,7 +10,7 @@
  */
 
 import type { ExtractResult, FieldGuess, OcrWord } from './parse';
-import { extractFromOcr } from './parse';
+import { extractFromOcr, extractOwnerNic } from './parse';
 import type { RgbaImage } from './preprocess';
 import { TUNING_PAGE, TUNING_STRIP, preprocessForOcr, type Tuning } from './preprocess';
 
@@ -28,6 +28,12 @@ export interface OcrPass {
 }
 
 export interface ScanResult extends ExtractResult {
+  /**
+   * The NIC printed on the certificate, which belongs to the registered owner
+   * and is not necessarily the sender's. Offered for the user to accept or
+   * reject, never applied on its own.
+   */
+  ownerNic: FieldGuess<string> | null;
   passes: OcrPass[];
   channel: 'green' | 'luma';
   skewDegrees: number;
@@ -157,6 +163,10 @@ export async function scanCertificate(
   return {
     plate: reconcile(a.plate, b.plate),
     date: reconcile(a.date, b.date),
+    ownerNic: reconcile(
+      extractOwnerNic(first.text, first.words),
+      extractOwnerNic(second.text, second.words),
+    ),
     passes,
     channel,
     skewDegrees,

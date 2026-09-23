@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { formatCnicDisplay } from '../lib/format';
 import { STRINGS, dirFor, type Lang } from '../lib/i18n';
 import { gateFrame, toSmallGray, type GateResult } from '../lib/ocr/framecheck';
 import { gradeConfidence, type Grade } from '../lib/ocr/parse';
@@ -11,6 +12,12 @@ export interface ScanFields {
   plate: string | null;
   /** DD/MM/YYYY for the form, or null. */
   date: string | null;
+  /**
+   * Only ever set when the user ticked the box confirming the CNIC on the
+   * certificate is theirs and their SIM is registered to it. Null otherwise,
+   * including when one was read but not confirmed.
+   */
+  cnic: string | null;
 }
 
 /**
@@ -37,6 +44,8 @@ type Phase = 'camera' | 'working' | 'result' | 'failed' | 'nocamera';
 interface Readout {
   plate: { value: string; grade: Grade } | null;
   date: { value: string; grade: Grade } | null;
+  /** The registered owner's number, offered but never applied on its own. */
+  ownerNic: string | null;
   stripUrl: string | null;
 }
 
@@ -119,7 +128,13 @@ export default function ScanSheet({
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const [phase, setPhase] = useState<Phase>('camera');
-  const [readout, setReadout] = useState<Readout>({ plate: null, date: null, stripUrl: null });
+  const [readout, setReadout] = useState<Readout>({
+    plate: null,
+    date: null,
+    ownerNic: null,
+    stripUrl: null,
+  });
+  const [nicConfirmed, setNicConfirmed] = useState(false);
   const [plateEdit, setPlateEdit] = useState('');
   const [dateEdit, setDateEdit] = useState('');
   const [guideBox, setGuideBox] = useState<React.CSSProperties | null>(null);
@@ -301,7 +316,15 @@ export default function ScanSheet({
         stopCamera();
         setPlateEdit(plate?.value ?? '');
         setDateEdit(date?.value ?? '');
-        setReadout({ plate, date, stripUrl: rgbaToDataUrl(result.processed) });
+        // Never carried over from a previous scan: confirming whose CNIC it is
+        // has to be a fresh decision every time.
+        setNicConfirmed(false);
+        setReadout({
+          plate,
+          date,
+          ownerNic: result.ownerNic?.value ?? null,
+          stripUrl: rgbaToDataUrl(result.processed),
+        });
         setPhase('result');
         return true;
       } catch {
@@ -391,7 +414,8 @@ export default function ScanSheet({
   );
 
   const retake = useCallback(() => {
-    setReadout({ plate: null, date: null, stripUrl: null });
+    setReadout({ plate: null, date: null, ownerNic: null, stripUrl: null });
+    setNicConfirmed(false);
     goodFrames.current = 0;
     autoAttempts.current = 0;
     prevFrame.current = null;
@@ -482,6 +506,23 @@ export default function ScanSheet({
                   />
                 </div>
 
+                {readout.ownerNic && (
+                  <div className="nic-offer">
+                    <span className="label-as-text">{t.scanNicFound}</span>
+                    <p className="nic-value">{formatCnicDisplay(readout.ownerNic)}</p>
+                    <p className="msg msg-warn">{t.scanNicWarning}</p>
+                    <label className="check">
+                      <input
+                        type="checkbox"
+                        checked={nicConfirmed}
+                        onChange={(e) => setNicConfirmed(e.target.checked)}
+                      />
+                      <span>{t.scanNicUse}</span>
+                    </label>
+                    {!nicConfirmed && <p className="help">{t.scanNicTypeInstead}</p>}
+                  </div>
+                )}
+
                 <p className="help">{t.scanNeverCnic}</p>
               </>
             )}
@@ -525,6 +566,9 @@ export default function ScanSheet({
                 onAccept({
                   plate: plateEdit.trim() || null,
                   date: dateEdit.trim() || null,
+                  // Only when explicitly confirmed. An unticked box means the
+                  // user types their own CNIC on the form.
+                  cnic: nicConfirmed ? readout.ownerNic : null,
                 })
               }
             >

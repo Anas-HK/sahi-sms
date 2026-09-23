@@ -42,6 +42,8 @@ export default function App() {
       ...prev,
       plate: fields.plate ?? prev.plate,
       date: fields.date ?? prev.date,
+      // Null unless the user ticked the confirmation in the scan sheet.
+      cnic: fields.cnic ?? prev.cnic,
     }));
     setScanOpen(false);
   }, []);
@@ -143,6 +145,7 @@ export default function App() {
         <div className="field" data-state={state(shown(validation.fields.cnic, form.cnic))}>
           <label htmlFor="cnic">{t.cnicLabel}</label>
           <p className="help">{t.cnicHelp}</p>
+          <p className="help help-strong">{t.cnicNotFromPaper}</p>
           <input
             id="cnic"
             type="tel"

@@ -11,7 +11,7 @@
  *   REGN.No:  CHK-9513   DT : 15/08/2026
  */
 
-import { checkRegDate, isValidPlate, normalizePlate, toDDMMYYYY } from '../format';
+import { checkRegDate, isValidCnic, isValidPlate, normalizeCnic, normalizePlate, toDDMMYYYY } from '../format';
 
 /* --------------------------------------------------- confusion repair */
 
@@ -299,6 +299,66 @@ export function extractFromOcr(
   }
 
   return { plate, date };
+}
+
+/* --------------------------------------------------- owner NIC, on request */
+
+/** "NIC:" with the usual glyph slippage. */
+const RE_NIC_ANCHOR = /\bN\s*[I1L|]\s*C\s*\.?\s*:?/;
+
+/**
+ * How much of a 13 character run has to be a real digit before we believe it
+ * is a number rather than a word. Without this, repairDigits would happily
+ * turn part of the owner's name into a plausible looking CNIC.
+ */
+const MIN_NATIVE_DIGITS = 10;
+
+/**
+ * Reads the NIC printed on the certificate.
+ *
+ * Deliberately separate from extractFromOcr, which must never return a CNIC.
+ * This one is called only when the user has asked for it, and what it returns
+ * is **the registered owner's** number, not necessarily the sender's. 9771
+ * matches the CNIC against the SIM it arrives from, and for a motorcycle the
+ * person registering is frequently not the registered owner, so this can only
+ * ever be offered as a suggestion for the user to accept or reject.
+ */
+export function extractOwnerNic(text: string, words?: OcrWord[]): FieldGuess<string> | null {
+  const flat = (text ?? '').toUpperCase().replace(/\s+/g, ' ').trim();
+  if (!flat) return null;
+
+  const anchor = RE_NIC_ANCHOR.exec(flat);
+  if (!anchor) return null;
+
+  // Only look between this label and the next one. A colon starts the next
+  // field on a Form G, and stopping there is what prevents an empty NIC field
+  // from picking up the chassis number or the form serial further down.
+  const after = flat.slice(anchor.index + anchor[0].length, anchor.index + anchor[0].length + 60);
+  const nextLabel = after.indexOf(':');
+  const zone = nextLabel === -1 ? after : after.slice(0, nextLabel);
+
+  const run = /[0-9OILSBGZ][0-9OILSBGZ\s-]{11,}/.exec(zone);
+  if (!run) return null;
+
+  const raw = run[0];
+  const nativeDigits = (raw.match(/\d/g) ?? []).length;
+  if (nativeDigits < MIN_NATIVE_DIGITS) return null;
+
+  const digits = normalizeCnic(repairDigits(raw));
+  if (digits.length < 13) return null;
+
+  const value = digits.slice(0, 13);
+  if (!isValidCnic(value)) return null;
+
+  const confidence = confidenceFor(raw, words);
+  return {
+    value,
+    raw,
+    confidence,
+    // Always uncertain. Not because the read is doubtful, but because whose
+    // number it is cannot be decided from the paper.
+    uncertain: true,
+  };
 }
 
 /* ------------------------------------------------------ confidence gate */

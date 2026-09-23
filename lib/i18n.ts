@@ -30,6 +30,7 @@ export interface Strings {
 
   cnicLabel: string;
   cnicHelp: string;
+  cnicNotFromPaper: string;
   plateLabel: string;
   provinceLabel: string;
   dateLabel: string;
@@ -50,6 +51,10 @@ export interface Strings {
   scanNoCamera: string;
   scanChooseFile: string;
   scanNeverCnic: string;
+  scanNicFound: string;
+  scanNicWarning: string;
+  scanNicUse: string;
+  scanNicTypeInstead: string;
   scanDownload: string;
   scanHintEmpty: string;
   scanHintBlurry: string;
@@ -97,7 +102,10 @@ const en: Strings = {
   stepDetails: 'Your details',
 
   cnicLabel: 'CNIC number',
-  cnicHelp: 'Must be the CNIC this SIM is registered to.',
+  cnicHelp:
+    'Must be the CNIC your SIM is registered to. 9771 checks the two against telecom records and fails if they do not match.',
+  cnicNotFromPaper:
+    'The NIC printed on the certificate is the registered owner’s. Use it only if the owner is you.',
   plateLabel: 'Number plate',
   provinceLabel: 'Registered in',
   dateLabel: 'Registration date',
@@ -117,7 +125,13 @@ const en: Strings = {
   scanRetake: 'Again',
   scanNoCamera: 'No camera in this browser',
   scanChooseFile: 'Pick a photo instead',
-  scanNeverCnic: 'Only the plate and date are read. Never your CNIC.',
+  scanNeverCnic:
+    'The plate and date are read from the paper. The CNIC is not, unless you tick the box and confirm it is yours.',
+  scanNicFound: 'CNIC printed on the certificate',
+  scanNicWarning:
+    'This is the registered owner’s CNIC. 9771 only accepts the CNIC that your own SIM is registered to, so use this only if the owner is you. On a motorcycle it often is not.',
+  scanNicUse: 'This is my CNIC and my SIM is registered to it',
+  scanNicTypeInstead: 'Leave it unticked and type your own CNIC on the form instead.',
   scanDownload:
     'The first scan downloads the reader, about 15 MB, then keeps it. Your photo is not part of that.',
   scanHintEmpty: 'Point at the line with the plate and date',
@@ -187,7 +201,10 @@ const ur: Strings = {
   stepDetails: 'آپ کی تفصیل',
 
   cnicLabel: 'شناختی کارڈ نمبر',
-  cnicHelp: 'وہی نمبر جس پر یہ سم رجسٹرڈ ہے۔',
+  cnicHelp:
+    'وہی شناختی کارڈ نمبر جس پر یہ سم رجسٹرڈ ہے۔ 9771 دونوں کو ٹیلی کام ریکارڈ سے ملاتا ہے، اور نہ ملیں تو ناکام ہو جاتا ہے۔',
+  cnicNotFromPaper:
+    'سرٹیفکیٹ پر لکھا NIC نہیں۔ وہ رجسٹرڈ مالک کا ہوتا ہے، جو اکثر کوئی اور ہوتا ہے۔',
   plateLabel: 'نمبر پلیٹ',
   provinceLabel: 'کس صوبے میں رجسٹرڈ ہے',
   dateLabel: 'رجسٹریشن کی تاریخ',
@@ -207,7 +224,13 @@ const ur: Strings = {
   scanRetake: 'دوبارہ',
   scanNoCamera: 'اس براؤزر میں کیمرہ نہیں',
   scanChooseFile: 'اس کے بجائے تصویر منتخب کریں',
-  scanNeverCnic: 'صرف پلیٹ اور تاریخ پڑھی جاتی ہے۔ شناختی کارڈ نمبر کبھی نہیں۔',
+  scanNeverCnic:
+    'پلیٹ اور تاریخ کاغذ سے پڑھی جاتی ہے۔ شناختی کارڈ نمبر نہیں، جب تک آپ خانے پر نشان لگا کر تصدیق نہ کریں کہ وہ آپ کا ہے۔',
+  scanNicFound: 'سرٹیفکیٹ پر لکھا شناختی کارڈ نمبر',
+  scanNicWarning:
+    'یہ رجسٹرڈ مالک کا شناختی کارڈ نمبر ہے۔ 9771 صرف وہی نمبر قبول کرتا ہے جس پر آپ کی اپنی سم رجسٹرڈ ہے، اس لیے یہ تب استعمال کریں جب مالک آپ خود ہوں۔ موٹر سائیکل پر اکثر ایسا نہیں ہوتا۔',
+  scanNicUse: 'یہ میرا شناختی کارڈ نمبر ہے اور میری سم اسی پر رجسٹرڈ ہے',
+  scanNicTypeInstead: 'نشان نہ لگائیں اور اپنا شناختی کارڈ نمبر فارم میں خود لکھ لیں۔',
   scanDownload:
     'پہلی بار پڑھنے والا سافٹ ویئر ڈاؤن لوڈ ہوتا ہے، تقریباً 15 ایم بی، پھر محفوظ رہتا ہے۔ آپ کی تصویر اس میں شامل نہیں۔',
   scanHintEmpty: 'پلیٹ اور تاریخ والی سطر پر رکھیں',
@@ -216,7 +239,8 @@ const ur: Strings = {
   scanHintReady: 'مل گیا',
   scanAutoGaveUp: 'خود سے نہیں پڑھ سکا۔ بٹن دبائیں، یا خود لکھ لیں۔',
   scanCtaTitle: 'سرٹیفکیٹ اسکین کریں',
-  scanCtaBody: 'کیمرہ پلیٹ اور تاریخ والی سطر پر رکھیں۔ پڑھتے ہی خود تصویر لے لے گا۔',
+  scanCtaBody:
+    'کیمرہ پلیٹ اور تاریخ والی سطر پر رکھیں۔ پڑھتے ہی خود تصویر لے لے گا۔',
   scanOrType: 'یا نیچے خود لکھ لیں',
 
   dateHelpTitle: 'تاریخ معلوم نہیں؟',
